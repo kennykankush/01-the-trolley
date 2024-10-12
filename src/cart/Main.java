@@ -1,12 +1,16 @@
-package cart;
 // Executes the flow of the logic
 
+import java.io.IOException;
+
 public class Main {
+    public static void main(String[] args) throws IOException {
 
-    public static void main(String[] args) {
-        ShoppingCart cart = new ShoppingCart();
-        cart.menu();
-        cart.processor();
+        Menu menu = new Menu();
+        menu.initiateMenu();
 
-    }
+        }
+        
+
+        
+
 }

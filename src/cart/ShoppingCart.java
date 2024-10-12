@@ -1,111 +1,88 @@
-package cart;
 //Core Logic & Input
 
-import java.util.List;
-import java.util.ArrayList;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
-    public class ShoppingCart {
+public class ShoppingCart {
 
-        List<String> cart = new ArrayList<>();                
-        Scanner scanner = new Scanner(System.in);
+    Map<String, Integer> map = new HashMap<>();
+    Scanner scanner_item = new Scanner(System.in);
+    Scanner scanner_qty = new Scanner(System.in);
 
-        public static String getPcName(){
-            String pcName = "user";
-            try {
-                pcName = InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
+
+        public void viewList(){
+            for (Map.Entry<String, Integer> entry : map.entrySet()) {
+                System.out.println("Item : " + entry.getKey() + "\nQuantity : " + entry.getValue());
             }
-            return pcName;
+        }
+
+
+        public void addItem(){
+
+            System.out.println("Item?");
+
+            String item = scanner_item.nextLine().trim();
+
+            System.out.println("Qty?");
+            Integer qty = scanner_qty.nextInt();
+
+            map.put(item,qty);
 
         }
 
-        public void menu(){         
-            System.out.println("\n \n");                         
-            System.out.println("Dear " + getPcName() + ",\nWelcome to The Trolley\n=============\n");
-            System.out.println("View the List : type list");
-            System.out.println("Add an entry : type add (items)");
-            System.out.println("Remove an Entry : type delete (items)");
-            System.out.println(" ");
+        public void deleteItem(){
 
-        } 
+            System.out.println("Which item to delete?");
 
-        public String user_input(){     
+            String item = scanner_item.nextLine().trim();
 
-            String input = scanner.nextLine();
-            return input.toLowerCase();
+            map.remove(item);
+
+        }
+
+        public void saveList(String filePath, Map<String, Integer> map) throws IOException {
+
+            FileWriter fw = new FileWriter(filePath, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            for (Map.Entry<String, Integer> entry : map.entrySet()){
+                bw.write(entry.getKey() + "," + entry.getValue());
+                bw.newLine();
+            }
+
+            bw.close();
+            fw.close();
+
             
         }
 
-        public void processor(){
+        public void loadList(String filePath) throws IOException{
 
-            String input = "";
 
-            while (!input.equals("quit")) {
-                input = user_input();
+            System.out.println("Fetching list.");
+            FileReader fr = new FileReader(filePath);
+            BufferedReader br = new BufferedReader(fr);
 
-                if (!input.equals("list") || !input.equals("add") || !input.equals("delete")){
-                    System.out.println("\nI have no idea what you're saying, its either \nadd, delete or list");
-                }
+            String line;
+
+            while ((line = br.readLine()) != null){
+                String[] words = line.split(",");
                 
-                if (input.equals("list")){
-                    System.out.println("\nIniatiating...\nThe Cart\n======\n");
-                    
-                    if (cart.size() > 0 ) {
-                        for (String items: cart){
-                            System.out.println(items);
-                        }
-    
-                    } else {
-                        System.out.println("\nNo cart brotha");
-                    }
-                    
+                map.put(words[0],Integer.parseInt(words[1]));
 
-                }
+            }
 
-                if (input.startsWith("add")){
-                    System.out.println("\nAdding in progress");
-                    String[] inputProcessing = input.split(" ");
-
-                    if (inputProcessing.length >= 3) {
-                        System.out.println("\nSuccessfully Added");
-                        for (int i = 1; i < inputProcessing.length; i++){
-                            cart.add(inputProcessing[i]);
-                        }
-
-                    } else if (inputProcessing.length == 2 ){
-                        System.out.println("\nSuccessfully Added");
-                        String itemToAdd = inputProcessing[1];
-                        cart.add(itemToAdd);
-                    } else if (inputProcessing.length == 1){
-                        System.out.println("You forgotten your fruits.");
-                    }
-
-                }
-
-                if (input.startsWith("delete")){
-                    System.out.println("\nDeleting in progress");
-                    String[] itemsToDeleteArray = input.split(" ");
-                    String itemsToDelete = itemsToDeleteArray[1];
-                    System.out.println(itemsToDelete);
+            br.close();
+            fr.close();
 
 
-                    for (int i = 0; i < cart.size(); i++){
-                        if (cart.get(i).equals(itemsToDelete)){
-                            cart.remove(i);
-                            break;
-                        }
-                    }  
-                    
-                } 
-                
-
-            } System.out.println("\nExit"); 
-
-
-        
         }
+
+
 }
